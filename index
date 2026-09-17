@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TN Gadgets</title>
+<meta name="description" content="অনলাইনে TN Gadgets-এর কালেকশন দেখুন এবং দ্রুত, নির্ভরযোগ্য ডেলিভারিতে অর্ডার করুন।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#111111;
+    --ink-soft:#4b4b4f;
+    --muted:#8a8a90;
+    --line:#e7e7ea;
+    --bg:#ffffff;
+    --panel:#f7f7f8;
+    --accent:#111111;
+    --accent-hover:#2c2c2f;
+    --sale:#d1263f;
+    --save-bg:#fdecef;
+    --radius:10px;
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box;min-width:0;}
+  html,body{margin:0;padding:0;overflow-x:hidden;width:100%;}
+  body{
+    font-family:'Hind Siliguri','Inter',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;cursor:pointer;}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px;}
+  @media (max-width:600px){.wrap{padding:0 14px;}}
+
+  /* Skip link */
+  .skip-link{position:absolute;left:-999px;top:0;background:var(--ink);color:#fff;padding:10px 16px;z-index:200;}
+  .skip-link:focus{left:10px;top:10px;}
+
+  /* Marquee */
+  .marquee-bar{background:var(--ink);color:#fff;overflow:hidden;white-space:nowrap;}
+  .marquee-track{display:inline-block;padding:9px 0;animation:scroll 22s linear infinite;font-size:13px;letter-spacing:.2px;}
+  .marquee-track span{padding:0 24px;}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+  @media (prefers-reduced-motion: reduce){.marquee-track{animation:none;}}
+
+  /* Header */
+  header.site{border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:100;}
+  .header-top{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;}
+  .brand img{height:38px;width:auto;flex:none;}
+  .brand .name{font-family:'Inter',sans-serif;font-weight:800;font-size:17px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  .header-contact{display:flex;align-items:center;gap:16px;font-size:13.5px;color:var(--ink-soft);flex:none;}
+  .header-contact a{display:flex;align-items:center;gap:6px;}
+  .header-contact svg{width:15px;height:15px;flex:none;}
+  .contact-text{white-space:nowrap;}
+  .lang-pill{border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12.5px;font-weight:600;color:var(--ink-soft);flex:none;}
+  .icon-link{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--panel);flex:none;}
+
+  .cart-btn{position:relative;display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:600;flex:none;white-space:nowrap;}
+  .cart-btn svg{width:16px;height:16px;flex:none;}
+  .cart-count{background:var(--sale);border-radius:999px;font-size:11px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;}
+
+  /* Mobile header: collapse contact labels to icons, drop lang pill text */
+  @media (max-width:640px){
+    .brand .name{font-size:14px;max-width:34vw;}
+    .brand img{height:30px;}
+    .header-contact{gap:8px;}
+    .contact-text{display:none;}
+    .lang-pill{padding:4px 9px;}
+    .cart-btn{padding:8px 10px;}
+    .cart-btn .cart-label{display:none;}
+  }
+
+  .subnav{border-top:1px solid var(--line);}
+  .subnav .wrap{display:flex;align-items:center;gap:22px;padding:11px 20px;font-size:13.5px;font-weight:600;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .subnav a.active{color:var(--ink);border-bottom:2px solid var(--ink);padding-bottom:9px;margin-bottom:-11px;}
+  .subnav a:not(.active){color:var(--muted);}
+
+  /* Category chips (mobile-friendly, replaces the old sidebar) */
+  .cat-chips{display:none;}
+  @media (max-width:860px){
+    .cat-chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 4px;-webkit-overflow-scrolling:touch;}
+    .cat-chips a{flex:none;padding:8px 16px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink-soft);}
+    .cat-chips a.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  }
+
+  /* Layout */
+  main{padding:22px 0 60px;}
+  .layout{display:grid;grid-template-columns:230px 1fr;gap:30px;align-items:start;}
+  @media (max-width:860px){.layout{grid-template-columns:1fr;gap:0;}}
+
+  .cat-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;position:sticky;top:112px;}
+  @media (max-width:860px){.cat-panel{display:none;}}
+  .cat-panel h2{font-size:14px;margin:0 0 12px;letter-spacing:.2px;}
+  .cat-panel ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;}
+  .cat-panel li a{display:block;padding:8px 10px;border-radius:7px;font-size:14px;font-weight:600;}
+  .cat-panel li a.active{background:var(--ink);color:#fff;}
+  .cat-panel li a:not(.active):hover{background:#eeeeef;}
+
+  .content-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:4px 0 18px;flex-wrap:wrap;}
+  .content-head h1{font-size:21px;margin:0;font-weight:800;font-family:'Inter',sans-serif;}
+
+  .sort-select{
+    appearance:none;-webkit-appearance:none;-moz-appearance:none;
+    border:1px solid var(--line);border-radius:8px;padding:9px 34px 9px 12px;font-size:13px;font-weight:600;background:#fff;color:var(--ink-soft);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%234b4b4f' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 10px center;max-width:100%;
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  @media (max-width:1080px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);gap:10px;}}
+  @media (max-width:380px){.grid{grid-template-columns:1fr 1fr;gap:8px;}}
+
+  .card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;display:flex;flex-direction:column;transition:box-shadow .15s ease,transform .15s ease;min-width:0;}
+  .card:hover{box-shadow:0 6px 20px rgba(17,17,17,.08);transform:translateY(-2px);}
+  .card-media{position:relative;aspect-ratio:1/1;background:var(--panel);display:flex;align-items:center;justify-content:center;}
+  .card-media .emoji{font-size:clamp(28px,9vw,44px);line-height:1;}
+  .badge{position:absolute;top:8px;left:8px;background:var(--save-bg);color:var(--sale);font-size:10.5px;font-weight:700;padding:3px 7px;border-radius:6px;}
+  .card-body{padding:10px 11px 12px;display:flex;flex-direction:column;gap:7px;flex:1;}
+  .card-title{font-size:12.5px;font-weight:600;line-height:1.35;min-height:34px;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .price-row{display:flex;align-items:baseline;gap:7px;font-family:'Inter',sans-serif;flex-wrap:wrap;}
+  .price-now{font-size:15px;font-weight:800;}
+  .price-old{font-size:11.5px;color:var(--muted);text-decoration:line-through;}
+  .card-actions{display:flex;gap:6px;margin-top:auto;}
+  .btn{flex:1;text-align:center;font-size:11px;font-weight:700;padding:8px 4px;border-radius:7px;border:1px solid var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .btn.ghost{background:#fff;color:var(--ink);}
+  .btn.ghost:hover{background:var(--panel);}
+  .btn.solid{background:var(--ink);color:#fff;}
+  .btn.solid:hover{background:var(--accent-hover);}
+
+  /* Footer */
+  footer.site{background:var(--panel);border-top:1px solid var(--line);margin-top:20px;padding:36px 0 20px;}
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;}
+  @media (max-width:700px){.footer-grid{grid-template-columns:1fr;}}
+  footer.site h3{font-size:14px;margin:0 0 10px;}
+  footer.site p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 6px;}
+  footer.site ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  footer.site ul a{font-size:13.5px;color:var(--ink-soft);}
+  footer.site ul a:hover{color:var(--ink);}
+  .footer-bottom{border-top:1px solid var(--line);margin-top:26px;padding-top:16px;font-size:12.5px;color:var(--muted);text-align:center;}
+
+  /* Toast */
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:300;max-width:90vw;text-align:center;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">মূল বিষয়বস্তুতে যান</a>
+
+<div class="marquee-bar" role="banner" aria-label="ঘোষণা">
+  <div class="marquee-track">
+    <span>🎉 Welcome Offer: প্রথম অর্ডারে পাচ্ছেন ১০% ছাড়! কোড ব্যবহার করুন: TNG10</span>
+    <span>🎉 Welcome Offer: প্রথম অর্ডারে পাচ্ছেন ১০% ছাড়! কোড ব্যবহার করুন: TNG10</span>
+    <span>🎉 Welcome Offer: প্রথম অর্ডারে পাচ্ছেন ১০% ছাড়! কোড ব্যবহার করুন: TNG10</span>
+    <span>🎉 Welcome Offer: প্রথম অর্ডারে পাচ্ছেন ১০% ছাড়! কোড ব্যবহার করুন: TNG10</span>
+  </div>
+</div>
+
+<header class="site">
+  <div class="wrap header-top">
+    <a class="brand" href="#main-content" aria-label="TN Gadgets হোম">
+      <img src="assets/logo.webp" alt="TN Gadgets লোগো">
+      <span class="name">TN GADGETS</span>
+    </a>
+    <div class="header-contact">
+      <a href="mailto:asifabc999@gmail.com" class="icon-link" aria-label="ইমেইল">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4z"/><path d="M4 6l8 7 8-7"/></svg>
+      </a>
+      <a href="tel:01799903597" class="icon-link" aria-label="ফোন">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>
+      </a>
+      <span class="lang-pill">BN</span>
+      <button class="cart-btn" id="cartBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 3h2l2.6 12.6a2 2 0 0 0 2 1.4h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        <span class="cart-label">কার্ট</span>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </div>
+  <nav class="subnav" aria-label="প্রধান মেনু">
+    <div class="wrap">
+      <a href="#" class="active">সব পণ্য</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main-content">
+  <div class="wrap">
+    <div class="cat-chips">
+      <a href="#" class="active">সব পণ্য</a>
+    </div>
+  </div>
+
+  <div class="wrap layout">
+    <aside class="cat-panel" aria-label="ক্যাটাগরি">
+      <h2>ক্যাটাগরি তালিকা</h2>
+      <ul>
+        <li><a href="#" class="active">সব পণ্য</a></li>
+      </ul>
+    </aside>
+
+    <section>
+      <div class="content-head">
+        <h1>All Products</h1>
+        <select class="sort-select" id="sortSelect" aria-label="ক্রমানুসার">
+          <option value="default">ক্রমানুসার: ডিফল্ট</option>
+          <option value="low-high">দাম কম থেকে বেশি</option>
+          <option value="high-low">দাম বেশি থেকে কম</option>
+        </select>
+      </div>
+
+      <div class="grid" id="productGrid"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap footer-grid">
+    <div>
+      <h3>TN GADGETS</h3>
+      <p>আপনার দৈনন্দিন জীবনের জন্য যত্নসহকারে নির্বাচিত পণ্য।</p>
+      <p>Online Shop</p>
+    </div>
+    <div>
+      <h3>যোগাযোগ</h3>
+      <p><a href="mailto:asifabc999@gmail.com">asifabc999@gmail.com</a></p>
+      <p><a href="tel:01799903597">01799903597</a></p>
+    </div>
+    <div>
+      <h3>শপ</h3>
+      <ul>
+        <li><a href="#">সব পণ্য</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom wrap">© Powered by TN Gadgets | 2026</div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+// ---- Product data (mirrors the reference store) ----
+const products = [
+  {name:"F7 Desktop And Wall-Mounted Circulation Fan With An LED Digital Display", price:1799, old:null, emoji:"🌀"},
+  {name:"KH-740 Fascial Massage Gun", price:1399, old:null, emoji:"💆"},
+  {name:"Ramadan Retro LED Lamp Electronic Night Light", price:450, old:750, emoji:"💡"},
+  {name:"Electronic Digital Table Clock🕰️", price:1099, old:1350, emoji:"⏰"},
+  {name:"Auto Eject Charger", price:750, old:999, emoji:"🔌"},
+  {name:"Three-Head Fascial Gun", price:1399, old:1599, emoji:"💆"},
+  {name:"LED Candle 3pc Set✨✨", price:899, old:1099, emoji:"🕯️"},
+  {name:"Ice Mist Air Conditioning Cooling Fan", price:1799, old:2200, emoji:"🌀"},
+  {name:"Purple And Gray F6 Desktop Air Circulation Fan With A Digital Battery Display", price:1700, old:2300, emoji:"🌀"},
+  {name:"Mini Thermal Bluetooth Printer With Paper Roll", price:1899, old:2300, emoji:"🖨️"},
+  {name:"Mordarn Wood Style Table Lamp", price:1399, old:1899, emoji:"💡"},
+  {name:"Bladeless Mini High-Speed Desktop Fan With 3 Speeds", price:999, old:1399, emoji:"🌀"},
+  {name:"Premium High Speed Small Wind Cannon Turbine", price:1099, old:1599, emoji:"🌀"},
+  {name:"Apple Airpods Pro 2nd Generation (Black)", price:999, old:1499, emoji:"🎧"},
+  {name:"FRB N-27 Smart Wireless Neckband-400 Hours", price:1199, old:1499, emoji:"🎧"},
+];
+
+const grid = document.getElementById('productGrid');
+const fmt = n => 'Tk ' + n.toLocaleString('en-US');
+let cartCount = 0;
+
+function render(list){
+  grid.innerHTML = list.map((p, i) => `
+    <div class="card">
+      <div class="card-media">
+        ${p.old ? `<span class="badge">সাশ্রয় ${p.old - p.price} BDT</span>` : ''}
+        <span class="emoji">${p.emoji}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.name}</div>
+        <div class="price-row">
+          <span class="price-now">${fmt(p.price)}</span>
+          ${p.old ? `<span class="price-old">${fmt(p.old)}</span>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="btn ghost" data-action="cart" data-idx="${i}">কার্টে যোগ</button>
+          <button class="btn solid" data-action="order" data-idx="${i}">অর্ডার করুন</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+render(products);
+
+document.getElementById('sortSelect').addEventListener('change', e => {
+  const v = e.target.value;
+  let list = [...products];
+  if (v === 'low-high') list.sort((a,b)=>a.price-b.price);
+  if (v === 'high-low') list.sort((a,b)=>b.price-a.price);
+  render(list);
+});
+
+grid.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const idx = btn.dataset.idx;
+  const name = products[idx].name;
+  if (btn.dataset.action === 'cart') {
+    cartCount++;
+    document.getElementById('cartCount').textContent = cartCount;
+    showToast(name + ' কার্টে যোগ করা হয়েছে');
+  } else {
+    showToast(name + ' — অর্ডার প্রক্রিয়া শুরু হবে');
+  }
+});
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
