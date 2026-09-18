@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TN Gadgets — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#5b3df0;
+    --accent-soft:#efeafe;
+    --ink:#15151a;
+    --ink-soft:#5a5a63;
+    --muted:#9797a1;
+    --line:#e9e9ee;
+    --bg:#f4f4f8;
+    --card:#ffffff;
+    --green:#1f9d55;
+    --red:#d1263f;
+    --amber:#b4790a;
+    --radius:16px;
+  }
+  *{box-sizing:border-box;min-width:0;}
+  html,body{margin:0;padding:0;overflow-x:hidden;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);position:relative;padding-bottom:84px;}
+
+  /* Top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;}
+  .icon-btn{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--bg);flex:none;}
+  .icon-btn svg{width:19px;height:19px;}
+  .topbar .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:16px;}
+  .topbar .brand img{height:26px;width:auto;border-radius:5px;}
+
+  /* Views */
+  .view{display:none;padding:18px;animation:fade .15s ease;}
+  .view.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  .greeting-card{background:linear-gradient(135deg,#6f4bf5,#8f6bff);border-radius:20px;padding:22px 20px 26px;color:#fff;position:relative;overflow:hidden;}
+  .greeting-card .hello{opacity:.85;font-size:13.5px;}
+  .greeting-card h1{margin:2px 0 8px;font-size:28px;font-weight:800;}
+  .live-row{display:flex;align-items:center;gap:7px;font-size:13px;opacity:.9;}
+  .dot{width:7px;height:7px;border-radius:50%;background:#5be07a;flex:none;}
+  .avatar{position:absolute;top:20px;right:18px;width:46px;height:46px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.15);}
+  .avatar img{height:70%;width:70%;object-fit:contain;}
+
+  .link-pill{margin-top:16px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:8px;font-size:13px;}
+  .link-pill span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .link-pill button{color:#fff;opacity:.9;}
+  .link-pill svg{width:15px;height:15px;}
+
+  .section-title{font-size:15.5px;font-weight:800;margin:22px 0 12px;}
+  .qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .qa-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;}
+  .qa-ico{width:38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;font-size:18px;}
+  .qa-text{min-width:0;}
+  .qa-text b{display:block;font-size:13.5px;font-weight:700;}
+  .qa-text small{color:var(--muted);font-size:11.5px;}
+
+  /* Bottom nav */
+  .bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:520px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:10px 10px calc(10px + env(safe-area-inset-bottom));z-index:50;}
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);flex:1;}
+  .nav-item svg{width:21px;height:21px;}
+  .nav-item.active{color:var(--accent);}
+  .nav-home{width:52px;height:52px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;margin-top:-28px;box-shadow:0 8px 18px rgba(91,61,240,.4);flex:none;}
+  .nav-home svg{width:22px;height:22px;}
+
+  /* Drawer */
+  .overlay{position:fixed;inset:0;background:rgba(20,20,25,.45);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:60;}
+  .overlay.show{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;left:0;bottom:0;width:82%;max-width:340px;background:#fff;z-index:70;transform:translateX(-100%);transition:transform .22s ease;overflow-y:auto;padding:18px;}
+  .drawer.show{transform:translateX(0);}
+  .drawer-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .drawer-brand{display:flex;align-items:center;gap:8px;font-weight:800;}
+  .drawer-brand img{height:24px;}
+  .shop-card{background:var(--bg);border-radius:14px;padding:14px;margin-bottom:14px;}
+  .shop-card-top{display:flex;align-items:center;gap:12px;}
+  .shop-avatar{width:44px;height:44px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden;}
+  .shop-avatar img{height:70%;width:70%;object-fit:contain;}
+  .shop-card b{display:block;font-size:14.5px;}
+  .shop-card small{color:var(--muted);font-size:12px;}
+  .shop-link{display:flex;align-items:center;gap:6px;color:var(--accent);font-size:12.5px;margin-top:10px;font-weight:600;}
+  .drawer-item{display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:12px;font-size:14.5px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+  .drawer-item svg{width:19px;height:19px;flex:none;color:var(--ink-soft);}
+  .drawer-item.active{background:var(--accent);color:#fff;}
+  .drawer-item.active svg{color:#fff;}
+  .drawer-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin:14px 6px 6px;}
+  .plan-card{margin-top:16px;background:var(--accent-soft);border-radius:12px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .plan-card b{font-size:13.5px;display:block;}
+  .plan-card small{color:var(--ink-soft);font-size:11.5px;}
+  .upgrade-btn{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:7px 12px;border-radius:20px;flex:none;}
+  .logout-btn{margin-top:10px;width:100%;text-align:center;color:var(--red);font-weight:700;font-size:13.5px;padding:10px;border-radius:10px;background:#fdecef;}
+
+  /* Generic page bits */
+  .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .page-head h2{font-size:19px;margin:0;font-weight:800;}
+  .add-btn{background:var(--ink);color:#fff;font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:10px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;}
+  .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .muted{color:var(--muted);font-size:12.5px;}
+  .chip{font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;}
+  .chip.green{background:#e7f7ee;color:var(--green);}
+  .chip.amber{background:#fdf2e2;color:var(--amber);}
+  .chip.gray{background:var(--bg);color:var(--ink-soft);}
+  .icon-action{width:30px;height:30px;border-radius:8px;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+  .icon-action svg{width:15px;height:15px;}
+
+  .prod-row{display:flex;gap:12px;align-items:center;}
+  .prod-emoji{width:48px;height:48px;border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;}
+  .prod-info{min-width:0;flex:1;}
+  .prod-info b{display:block;font-size:13.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;}
+  .prod-price{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .prod-actions{display:flex;gap:6px;}
+
+  .toggle{width:38px;height:22px;border-radius:20px;background:var(--line);position:relative;flex:none;transition:background .15s;}
+  .toggle.on{background:var(--green);}
+  .toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s;}
+  .toggle.on::after{transform:translateX(16px);}
+
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .stat-card small{color:var(--muted);font-size:11.5px;}
+  .stat-card b{display:block;font-size:19px;margin-top:2px;}
+  .bars{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:6px;}
+  .bar{flex:1;background:var(--accent-soft);border-radius:6px 6px 0 0;position:relative;}
+  .bar span.fill{position:absolute;bottom:0;left:0;right:0;background:var(--accent);border-radius:6px 6px 0 0;}
+  .bar-labels{display:flex;gap:8px;margin-top:6px;}
+  .bar-labels span{flex:1;text-align:center;font-size:10.5px;color:var(--muted);}
+
+  .empty{text-align:center;padding:50px 16px;color:var(--muted);}
+  .empty .e-ico{font-size:36px;margin-bottom:10px;}
+  .empty b{display:block;color:var(--ink);font-size:14.5px;margin-bottom:4px;}
+
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--ink-soft);}
+  .field input, .field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13.5px;font-family:inherit;background:#fff;}
+
+  /* Modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(20,20,25,.5);display:none;align-items:flex-end;z-index:80;}
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;width:100%;max-width:520px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;}
+  .modal h3{margin:0 0 14px;font-size:16.5px;}
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .modal-actions button{flex:1;padding:11px;border-radius:10px;font-weight:700;font-size:13.5px;}
+  .btn-cancel{background:var(--bg);color:var(--ink);}
+  .btn-save{background:var(--ink);color:#fff;}
+
+  #toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease;z-index:200;max-width:88%;text-align:center;}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <button class="icon-btn" id="menuBtn" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="brand"><img src="assets/logo.webp" alt="">TN GADGETS</div>
+    <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+    </button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section class="view active" data-view="dashboard">
+    <div class="greeting-card">
+      <div class="avatar"><img src="assets/logo.webp" alt=""></div>
+      <div class="hello">Good morning,</div>
+      <h1>TN</h1>
+      <div class="live-row"><span class="dot"></span> TN Gadgets · Live</div>
+      <div class="link-pill">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>
+        <span>tn-gadgets.shop</span>
+        <button title="Open store" onclick="showToast('Opening storefront preview…')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 5h5v5"/><path d="M19 5 10 14"/><path d="M19 13v6H5V5h6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-title">Quick actions</div>
+    <div class="qa-grid" id="quickActions"></div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="view" data-view="products">
+    <div class="page-head">
+      <h2>Products</h2>
+      <button class="add-btn" onclick="openProductModal()">+ Add product</button>
+    </div>
+    <div id="productList"></div>
+  </section>
+
+  <!-- ORDERS -->
+  <section class="view" data-view="orders">
+    <div class="page-head"><h2>Orders</h2></div>
+    <div id="orderList"></div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="view" data-view="categories">
+    <div class="page-head">
+      <h2>Categories</h2>
+      <button class="add-btn" onclick="addCategory()">+ Add</button>
+    </div>
+    <div id="categoryList"></div>
+  </section>
+
+  <!-- CUSTOMERS -->
+  <section class="view" data-view="customers">
+    <div class="page-head"><h2>Customers</h2></div>
+    <div id="customerList"></div>
+  </section>
+
+  <!-- MANAGE SHOP -->
+  <section class="view" data-view="manage-shop">
+    <div class="page-head"><h2>Manage Shop</h2></div>
+    <div class="card">
+      <div class="field"><label>Shop name</label><input id="shopName" value="TN Gadgets"></div>
+      <div class="field"><label>Phone</label><input id="shopPhone" value="01799903597"></div>
+      <div class="field"><label>Email</label><input id="shopEmail" value="asifabc999@gmail.com"></div>
+      <div class="field"><label>Address</label><input id="shopAddress" placeholder="Shop address"></div>
+      <button class="add-btn" style="width:100%;padding:11px;" onclick="showToast('Shop details saved')">Save changes</button>
+    </div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="view" data-view="analytics">
+    <div class="page-head"><h2>Analytics</h2></div>
+    <div class="stat-grid">
+      <div class="stat-card"><small>Total sales</small><b>Tk 42,300</b></div>
+      <div class="stat-card"><small>Orders</small><b>128</b></div>
+      <div class="stat-card"><small>Visitors (7d)</small><b>1,540</b></div>
+      <div class="stat-card"><small>Conversion</small><b>3.2%</b></div>
+    </div>
+    <div class="card">
+      <div class="row-between"><b style="font-size:13.5px;">Sales this week</b><span class="muted">Tk 42,300</span></div>
+      <div class="bars" id="salesBars"></div>
+      <div class="bar-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+    </div>
+  </section>
+
+  <!-- PROMO CODES -->
+  <section class="view" data-view="promo">
+    <div class="page-head">
+      <h2>Promo Codes</h2>
+      <button class="add-btn" onclick="showToast('Promo code creator coming soon')">+ Add</button>
+    </div>
+    <div class="card row-between">
+      <div><b style="font-size:13.5px;">TNG10</b><div class="muted">10% off · expires 30 Sep</div></div>
+      <span class="chip green">Active</span>
+    </div>
+    <div class="card row-between">
+      <div><b style="font-size:13.5px;">WELCOME50</b><div class="muted">Tk 50 off · expires 15 Oct</div></div>
+      <span class="chip green">Active</span>
+    </div>
+  </section>
+
+  <!-- PLACEHOLDER PAGES -->
+  <section class="view" data-view="landing-pages">
+    <div class="page-head"><h2>Landing Pages</h2></div>
+    <div class="empty"><div class="e-ico">🧩</div><b>No landing pages yet</b><div>Create a custom page for a product launch or campaign.</div><br>
+      <button class="add-btn" onclick="showToast('Landing page builder coming soon')">+ Create page</button>
+    </div>
+  </section>
+
+  <section class="view" data-view="reports">
+    <div class="page-head"><h2>Reports</h2></div>
+    <div class="card row-between"><div>This month's revenue</div><b>Tk 42,300</b></div>
+    <div class="card row-between"><div>Orders fulfilled</div><b>112</b></div>
+    <div class="card row-between"><div>Returns</div><b>3</b></div>
+  </section>
+
+  <section class="view" data-view="courier">
+    <div class="page-head"><h2>TN Courier</h2></div>
+    <div class="empty"><div class="e-ico">🚚</div><b>Ship & track orders</b><div>Connect a courier partner to auto-generate shipping labels.</div><br>
+      <button class="add-btn" onclick="showToast('Courier setup coming soon')">Set up courier</button>
+    </div>
+  </section>
+
+  <section class="view" data-view="resell">
+    <div class="page-head"><h2>Resell</h2></div>
+    <div class="empty"><div class="e-ico">🤝</div><b>Drop-ship & earn</b><div>Let resellers list your products and earn a commission per sale.</div></div>
+  </section>
+
+  <section class="view" data-view="subscription">
+    <div class="page-head"><h2>Subscription</h2></div>
+    <div class="card row-between">
+      <div><b style="font-size:13.5px;">Free Plan</b><div class="muted">Tap to upgrade for more features</div></div>
+      <button class="upgrade-btn" onclick="showToast('Upgrade flow coming soon')">Upgrade</button>
+    </div>
+  </section>
+
+  <section class="view" data-view="billing">
+    <div class="page-head"><h2>Billing</h2></div>
+    <div class="empty"><div class="e-ico">🧾</div><b>No invoices yet</b><div>Invoices and receipts will show up here.</div></div>
+  </section>
+
+  <section class="view" data-view="help">
+    <div class="page-head"><h2>Help</h2></div>
+    <div class="card">
+      <div class="row-between" style="margin-bottom:10px;"><span>📧 Email</span><span class="muted">asifabc999@gmail.com</span></div>
+      <div class="row-between"><span>📞 Phone</span><span class="muted">01799903597</span></div>
+    </div>
+  </section>
+
+  <section class="view" data-view="mobile-app">
+    <div class="page-head"><h2>Mobile App</h2></div>
+    <div class="empty"><div class="e-ico">📱</div><b>Manage on the go</b><div>Download the TN Gadgets admin app (coming soon).</div></div>
+  </section>
+
+  <!-- Bottom nav -->
+  <nav class="bottomnav">
+    <button class="nav-item" data-nav="products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l1.5-3h15L21 7"/><path d="M3 7h18v13H3z"/><path d="M9 11a3 3 0 0 0 6 0"/></svg>
+      Products
+    </button>
+    <button class="nav-home" data-nav="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+    </button>
+    <button class="nav-item" data-nav="orders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+      Orders
+    </button>
+  </nav>
+
+  <!-- Drawer -->
+  <div class="overlay" id="overlay"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-top">
+      <div class="drawer-brand"><img src="assets/logo.webp" alt="">TN GADGETS</div>
+      <button class="icon-btn" id="closeDrawer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-card-top">
+        <div class="shop-avatar"><img src="assets/logo.webp" alt=""></div>
+        <div><b>TN Gadgets</b><small>TN GADGETS</small></div>
+      </div>
+      <div class="shop-link">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+        tn-gadgets.shop
+      </div>
+    </div>
+
+    <div class="drawer-item" data-nav="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+    <div class="drawer-item" data-nav="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Orders</div>
+    <div class="drawer-item" data-nav="products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Products</div>
+    <div class="drawer-item" data-nav="categories"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="18" r="3"/><path d="M12 3 6 15h12Z"/></svg>Categories</div>
+    <div class="drawer-item" data-nav="customers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.6"/><path d="M15 20a5.5 5.5 0 0 1 7-5.3"/></svg>Customers</div>
+
+    <div class="drawer-label">Shop &amp; growth</div>
+    <div class="drawer-item" data-nav="manage-shop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9 4 4h16l1 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>Manage Shop</div>
+    <div class="drawer-item" data-nav="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>Analytics</div>
+    <div class="drawer-item" data-nav="landing-pages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg>Landing Pages</div>
+    <div class="drawer-item" data-nav="promo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12 12 20l-9-9V4h7Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>Promo Codes</div>
+    <div class="drawer-item" data-nav="mobile-app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>Mobile App</div>
+
+    <div class="drawer-label">TN Go <span style="background:var(--accent-soft);color:var(--accent);padding:2px 7px;border-radius:8px;font-size:10px;">NEW</span></div>
+    <div class="drawer-item" data-nav="courier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="7" width="14" height="10" rx="1"/><path d="M15 10h4l3 3v4h-7"/><circle cx="5.5" cy="19" r="1.6"/><circle cx="17.5" cy="19" r="1.6"/></svg>TN Courier</div>
+
+    <div class="plan-card">
+      <div><b>Free Plan</b><small>Tap to upgrade</small></div>
+      <button class="upgrade-btn" onclick="showToast('Upgrade flow coming soon')">Upgrade</button>
+    </div>
+    <button class="logout-btn" onclick="showToast('Logged out (demo)')">Log out</button>
+  </div>
+
+  <!-- Product modal -->
+  <div class="modal-overlay" id="productModalOverlay">
+    <div class="modal">
+      <h3>Add product</h3>
+      <div class="field"><label>Product name</label><input id="pName" placeholder="e.g. Fascial Massage Gun"></div>
+      <div class="field"><label>Price (Tk)</label><input id="pPrice" type="number" placeholder="1399"></div>
+      <div class="field"><label>Old price (optional)</label><input id="pOld" type="number" placeholder="1599"></div>
+      <div class="field"><label>Icon</label>
+        <select id="pEmoji">
+          <option value="🌀">🌀 Fan</option>
+          <option value="💆">💆 Massage gun</option>
+          <option value="💡">💡 Lamp</option>
+          <option value="⏰">⏰ Clock</option>
+          <option value="🔌">🔌 Charger</option>
+          <option value="🎧">🎧 Audio</option>
+          <option value="🖨️">🖨️ Printer</option>
+          <option value="🕯️">🕯️ Candle</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeProductModal()">Cancel</button>
+        <button class="btn-save" onclick="saveProduct()">Save product</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+
+<script>
+/* ---------- state ---------- */
+let products = [
+  {name:"F7 Desktop Circulation Fan", price:1799, old:null, emoji:"🌀", live:true},
+  {name:"KH-740 Fascial Massage Gun", price:1399, old:null, emoji:"💆", live:true},
+  {name:"Ramadan Retro LED Lamp", price:450, old:750, emoji:"💡", live:true},
+  {name:"Electronic Digital Table Clock", price:1099, old:1350, emoji:"⏰", live:false},
+  {name:"Auto Eject Charger", price:750, old:999, emoji:"🔌", live:true},
+  {name:"Apple Airpods Pro 2nd Gen", price:999, old:1499, emoji:"🎧", live:true},
+];
+let categories = ["All Products", "Fans", "Audio", "Home & Living"];
+let customers = [
+  {name:"Rafiul Islam", phone:"017xxxxxxx1", orders:4},
+  {name:"Nusrat Jahan", phone:"018xxxxxxx2", orders:1},
+  {name:"Mahin Sarker", phone:"019xxxxxxx3", orders:7},
+];
+let orders = [
+  {id:"#TNG-1042", customer:"Rafiul Islam", total:1799, status:"Pending"},
+  {id:"#TNG-1041", customer:"Nusrat Jahan", total:999, status:"Delivered"},
+  {id:"#TNG-1040", customer:"Mahin Sarker", total:2748, status:"Confirmed"},
+  {id:"#TNG-1039", customer:"Sadia Akter", total:750, status:"Delivered"},
+];
+
+const quickActions = [
+  {icon:"◈", label:"Categories", sub:"Organize products", nav:"categories"},
+  {icon:"👥", label:"Customers", sub:"Browse buyers", nav:"customers"},
+  {icon:"🏬", label:"Manage Shop", sub:"Profile & settings", nav:"manage-shop"},
+  {icon:"▭", label:"Landing Pages", sub:"Custom pages", nav:"landing-pages"},
+  {icon:"🏷️", label:"Promo Codes", sub:"Discounts", nav:"promo"},
+  {icon:"📊", label:"Analytics", sub:"Detailed reports", nav:"analytics"},
+  {icon:"📈", label:"Reports", sub:"Sales summary", nav:"reports"},
+  {icon:"🚚", label:"TN Courier", sub:"Ship & track", nav:"courier"},
+  {icon:"🤝", label:"Resell", sub:"Drop-ship & earn", nav:"resell"},
+  {icon:"💎", label:"Subscription", sub:"Plans & add-ons", nav:"subscription"},
+  {icon:"🧾", label:"Billing", sub:"Invoices & receipts", nav:"billing"},
+  {icon:"🎧", label:"Help", sub:"Talk to us", nav:"help"},
+];
+
+/* ---------- nav ---------- */
+function goTo(view){
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.dataset.view === view));
+  document.querySelectorAll('.nav-item, .nav-home').forEach(n => n.classList.toggle('active', n.dataset.nav === view));
+  document.querySelectorAll('.drawer-item').forEach(n => n.classList.toggle('active', n.dataset.nav === view));
+  closeDrawer();
+  window.scrollTo(0,0);
+  if(view==='products') renderProducts();
+  if(view==='orders') renderOrders();
+  if(view==='categories') renderCategories();
+  if(view==='customers') renderCustomers();
+  if(view==='analytics') renderBars();
+}
+document.querySelectorAll('[data-nav]').forEach(el => el.addEventListener('click', () => goTo(el.dataset.nav)));
+
+/* ---------- drawer ---------- */
+const drawer = document.getElementById('drawer'), overlay = document.getElementById('overlay');
+document.getElementById('menuBtn').addEventListener('click', () => { drawer.classList.add('show'); overlay.classList.add('show'); });
+document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
+overlay.addEventListener('click', closeDrawer);
+function closeDrawer(){ drawer.classList.remove('show'); overlay.classList.remove('show'); }
+document.getElementById('notifBtn').addEventListener('click', () => showToast('No new notifications'));
+
+/* ---------- quick actions ---------- */
+document.getElementById('quickActions').innerHTML = quickActions.map(q => `
+  <button class="qa-card" onclick="goTo('${q.nav}')">
+    <span class="qa-ico">${q.icon}</span>
+    <span class="qa-text"><b>${q.label}</b><small>${q.sub}</small></span>
+  </button>
+`).join('');
+
+/* ---------- products ---------- */
+function renderProducts(){
+  const el = document.getElementById('productList');
+  if(!products.length){ el.innerHTML = emptyState('📦','No products yet','Add your first product to start selling.'); return; }
+  el.innerHTML = products.map((p,i)=>`
+    <div class="card">
+      <div class="prod-row">
+        <div class="prod-emoji">${p.emoji}</div>
+        <div class="prod-info">
+          <b>${p.name}</b>
+          <div class="prod-price">Tk ${p.price.toLocaleString()}${p.old ? ` <span style="text-decoration:line-through;color:var(--muted);">Tk ${p.old.toLocaleString()}</span>`:''}</div>
+        </div>
+        <div class="toggle ${p.live?'on':''}" onclick="toggleLive(${i})"></div>
+      </div>
+      <div class="row-between" style="margin-top:10px;">
+        <span class="chip ${p.live?'green':'gray'}">${p.live?'Live':'Hidden'}</span>
+        <div class="prod-actions">
+          <button class="icon-action" onclick="deleteProduct(${i})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 13h10l1-13"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+function toggleLive(i){ products[i].live = !products[i].live; renderProducts(); }
+function deleteProduct(i){ products.splice(i,1); renderProducts(); showToast('Product removed'); }
+
+function openProductModal(){ document.getElementById('productModalOverlay').classList.add('show'); }
+function closeProductModal(){ document.getElementById('productModalOverlay').classList.remove('show'); }
+function saveProduct(){
+  const name = document.getElementById('pName').value.trim();
+  const price = parseInt(document.getElementById('pPrice').value, 10);
+  const old = parseInt(document.getElementById('pOld').value, 10);
+  if(!name || !price){ showToast('Add a name and price first'); return; }
+  products.unshift({name, price, old: old || null, emoji: document.getElementById('pEmoji').value, live:true});
+  ['pName','pPrice','pOld'].forEach(id => document.getElementById(id).value = '');
+  closeProductModal();
+  renderProducts();
+  showToast('Product added');
+}
+
+/* ---------- orders ---------- */
+function renderOrders(){
+  const statusClass = s => s==='Delivered' ? 'green' : s==='Pending' ? 'amber' : 'gray';
+  document.getElementById('orderList').innerHTML = orders.map(o => `
+    <div class="card row-between">
+      <div>
+        <b style="font-size:13.5px;">${o.id}</b>
+        <div class="muted">${o.customer}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:700;font-size:13.5px;">Tk ${o.total.toLocaleString()}</div>
+        <span class="chip ${statusClass(o.status)}">${o.status}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---------- categories ---------- */
+function renderCategories(){
+  document.getElementById('categoryList').innerHTML = categories.map((c,i) => `
+    <div class="card row-between">
+      <span>${c}</span>
+      ${i===0 ? '<span class="chip gray">Default</span>' : `<button class="icon-action" onclick="removeCategory(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>`}
+    </div>
+  `).join('');
+}
+function addCategory(){
+  const name = prompt('New category name:');
+  if(name && name.trim()){ categories.push(name.trim()); renderCategories(); showToast('Category added'); }
+}
+function removeCategory(i){ categories.splice(i,1); renderCategories(); }
+
+/* ---------- customers ---------- */
+function renderCustomers(){
+  document.getElementById('customerList').innerHTML = customers.map(c => `
+    <div class="card row-between">
+      <div><b style="font-size:13.5px;">${c.name}</b><div class="muted">${c.phone}</div></div>
+      <span class="chip gray">${c.orders} orders</span>
+    </div>
+  `).join('');
+}
+
+/* ---------- analytics bars ---------- */
+function renderBars(){
+  const vals = [40,65,50,80,60,90,72];
+  document.getElementById('salesBars').innerHTML = vals.map(v => `<div class="bar"><span class="fill" style="height:${v}%;"></span></div>`).join('');
+}
+
+/* ---------- empty state helper ---------- */
+function emptyState(icon,title,desc){
+  return `<div class="empty"><div class="e-ico">${icon}</div><b>${title}</b><div>${desc}</div></div>`;
+}
+
+/* ---------- toast ---------- */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+/* init */
+renderProducts();
+</script>
+</body>
+</html>
